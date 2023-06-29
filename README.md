@@ -19,6 +19,7 @@
 - quarkus-resteasy-reactive-jackson
 - quarkus-hibernate-reactive-panache
 - quarkus-reactive-pg-client
+- quarkus-jacoco
 
 ## Quarkus CLI (https://quarkus.io/guides/cli-tooling)
 
