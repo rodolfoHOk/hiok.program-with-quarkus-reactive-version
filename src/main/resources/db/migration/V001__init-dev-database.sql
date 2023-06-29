@@ -1,15 +1,9 @@
-CREATE SEQUENCE fruit_sequence
-	INCREMENT BY 1
-	MINVALUE 1
-	MAXVALUE 9223372036854775807
-	START 1
-	CACHE 1
-	NO CYCLE;
+CREATE SEQUENCE fruit_sequence START WITH 1 INCREMENT by 1;
 
 CREATE TABLE fruit (
-	id int8 NOT NULL,
-	name varchar(80) NULL,
-	quantity int4 NULL,
+	id bigint NOT NULL,
+	name varchar(80) NOT NULL UNIQUE,
+	quantity integer NOT NULL,
 	CONSTRAINT fruit_pkey PRIMARY KEY (id)
 );
 
