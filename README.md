@@ -7,7 +7,9 @@
 - Java 17
 - Quarkus 3.1
 - Hibernate Reactive + Panache
-- PostgreSQL
+- PostgreSQL (Reactive driver)
+- Tests (Junit5 / RestAssured / Vertx Testing)
+- Docker
 
 ## Create a Quarkus Project
 
@@ -20,12 +22,15 @@
 - quarkus-hibernate-reactive-panache
 - quarkus-reactive-pg-client
 - quarkus-jacoco
+- quarkus-test-vertx
+- quarkus-container-image-jib
+- quarkus-kubernetes
 
 ## Quarkus CLI (https://quarkus.io/guides/cli-tooling)
 
 - Install Quarkus CLI with sdkman: sdk install quarkus
 - Run project for development: quarkus dev
-- Add extension: quarkus extension add <extension-name>
+- Add extension: quarkus extension add [extension-name]
 - Run tests: quarkus test
 
 ## Test coverage
@@ -47,7 +52,7 @@
 - add in application.properties: quarkus.container-image.build=true
 - build running tests: ./mvnw package
 - build without running tests: ./mvnw package -DskipTests
-- check container image <user/project-name>: docker image ls
+- check container image [user/project-name]: docker image ls
 
 ### container image to Kubernetes
 
@@ -64,7 +69,7 @@
 
 ### container image with Docker
 
-- docker run --name <container-name> -p 8080:8080 -d <container-image-name>
+- docker run --name [container-name] -p 8080:8080 -d [container-image-name]
 
 ### Kubernetes with minikube
 
