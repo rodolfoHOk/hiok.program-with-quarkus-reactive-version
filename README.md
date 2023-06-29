@@ -78,6 +78,7 @@
 ## Util links
 
 - [Quarkus RestEasy reactive guide](https://quarkus.io/guides/resteasy-reactive)
+- [Quarkus getting started with reactive](https://quarkus.io/guides/getting-started-reactive)
 - [Quarkus Hibernate Reactive + Panache guide](https://quarkus.io/guides/hibernate-reactive-panache)
 - [Quarkus all properties](https://quarkus.io/guides/all-config)
 - [Quarkus datasource guide](https://quarkus.io/guides/datasource)
