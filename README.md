@@ -25,6 +25,7 @@
 - quarkus-test-vertx
 - quarkus-container-image-jib
 - quarkus-kubernetes
+- quarkus-hibernate-validator
 
 ## Quarkus CLI (https://quarkus.io/guides/cli-tooling)
 
@@ -91,4 +92,5 @@
 - [Quarkus Dev Services](https://quarkus.io/guides/dev-services)
 - [Quarkus container image](https://quarkus.io/guides/container-image)
 - [Quarkus deploy to Kubernetes](https://quarkus.io/guides/deploying-to-kubernetes)
+- [Quarkus validation](https://quarkus.io/guides/validation)
 - [minikube](https://minikube.sigs.k8s.io/docs/start/)

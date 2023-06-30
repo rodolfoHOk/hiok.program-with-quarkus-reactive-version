@@ -1,10 +1,13 @@
 package dev.hiok.application.resource;
 
+import dev.hiok.application.dto.FruitInputDTO;
+import dev.hiok.application.mapper.FruitMapper;
 import dev.hiok.domain.entity.FruitEntity;
 import dev.hiok.domain.service.FruitService;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -32,8 +35,9 @@ public class FruitResource {
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  public Uni<RestResponse<FruitEntity>> create(FruitEntity fruit) {
-    return fruitService.create(fruit)
+  public Uni<RestResponse<FruitEntity>> create(@Valid FruitInputDTO fruitInputDTO) {
+    var fruitEntity = FruitMapper.toEntity(fruitInputDTO);
+    return fruitService.create(fruitEntity)
       .map(savedFruit -> RestResponse.status(RestResponse.Status.CREATED, savedFruit));
   }
 
