@@ -10,6 +10,7 @@
 - PostgreSQL (Reactive driver)
 - Tests (Junit5 / RestAssured / Vertx Testing)
 - Docker
+- OpenAPI (Swagger UI)
 
 ## Create a Quarkus Project
 
@@ -26,6 +27,7 @@
 - quarkus-container-image-jib
 - quarkus-kubernetes
 - quarkus-hibernate-validator
+- quarkus-smallrye-openapi
 
 ## Quarkus CLI (https://quarkus.io/guides/cli-tooling)
 
@@ -81,6 +83,10 @@
 - add in application.properties: quarkus.kubernetes.image-pull-policy=never
 - build without running tests: ./mvnw package -DskipTests
 - kubectl apply -f target/kubernetes/kubernetes.json
+
+## OpenAPI
+
+- Access: http://localhost:8080/q/swagger-ui/
 
 ## Util links
 
