@@ -4,7 +4,10 @@ import dev.hiok.application.dto.FruitInputDTO;
 import dev.hiok.application.dto.FruitOutputDTO;
 import dev.hiok.domain.entity.FruitEntity;
 
-public class FruitMapper {
+public final class FruitMapper {
+
+  private FruitMapper() {
+  }
 
   public static FruitEntity toDomainEntity(FruitInputDTO inputDTO) {
     var entity = new FruitEntity();
