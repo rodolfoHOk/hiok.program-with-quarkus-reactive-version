@@ -1,19 +1,25 @@
 package dev.hiok.application.resource;
 
+import dev.hiok.application.dto.FruitCountDTO;
 import dev.hiok.application.dto.FruitInputDTO;
 import dev.hiok.application.dto.FruitOutputDTO;
+import dev.hiok.application.dto.Paged;
 import dev.hiok.application.mapper.FruitMapper;
 import dev.hiok.domain.service.FruitService;
+import io.quarkus.panache.common.Page;
+import io.quarkus.panache.common.Sort;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
@@ -35,10 +41,30 @@ public class FruitResource {
 
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  @Operation(summary = "List the fruits")
-  public Uni<List<FruitOutputDTO>> list() {
-    return fruitService.list()
-      .map(fruitEntities -> fruitEntities.stream().map(FruitMapper::toRepresentationModel).toList());
+  @Operation(summary = "Page and sort the fruits list")
+  public Uni<Paged<FruitOutputDTO>> pagedListBy(
+    @DefaultValue("id") @QueryParam("sort_field") String sortField,
+    @DefaultValue("Ascending") @QueryParam("sort_direction") String sortDirection,
+    @DefaultValue("10") @QueryParam("page_size") int pageSize,
+    @DefaultValue("0") @QueryParam("page_number") int pageNumber)
+  {
+    Sort sortTest = Sort.by(sortField).direction(Sort.Direction.valueOf(sortDirection));
+    Page pageTest = Page.of(pageNumber, pageSize);
+
+    return fruitService.pagedSortedList(sortTest, pageTest)
+      .map(list -> new Paged<FruitOutputDTO>(
+        list.stream().map(FruitMapper::toRepresentationModel).toList(),
+        pageTest.size,
+        pageTest.index)
+      );
+  }
+
+  @GET
+  @Path("/count")
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Total fruits count")
+  public Uni<FruitCountDTO> totalCount() {
+    return fruitService.count().map(FruitCountDTO::new);
   }
 
   @POST
