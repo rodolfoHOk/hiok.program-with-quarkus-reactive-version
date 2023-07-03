@@ -31,6 +31,87 @@ public class FruitResourceTest {
 
   @Test
   @Order(2)
+  public void shouldReturnOk_WhenFruitsListWithPageSize2PageNumber0() {
+    RestAssured
+      .given()
+        .queryParam("sort_field", "id")
+        .queryParam("sort_direction", "Ascending")
+        .queryParam("page_size", 2)
+        .queryParam("page_number", 0)
+      .when().get()
+      .then()
+        .statusCode(200)
+        .body("content.size()", CoreMatchers.is(2))
+        .body("pageSize", CoreMatchers.is(2))
+        .body("pageNumber", CoreMatchers.is(0));
+  }
+
+  @Test
+  @Order(3)
+  public void shouldReturnOk_WhenFruitsListWithPageSize2PageNumber1() {
+    RestAssured
+      .given()
+        .queryParam("sort_field", "id")
+        .queryParam("sort_direction", "Ascending")
+        .queryParam("page_size", 2)
+        .queryParam("page_number", 1)
+      .when().get()
+      .then()
+        .statusCode(200)
+        .body("content.size()", CoreMatchers.is(1))
+        .body("pageSize", CoreMatchers.is(2))
+        .body("pageNumber", CoreMatchers.is(1));
+  }
+
+  @Test
+  @Order(4)
+  public void shouldReturnOk_WhenFruitsListWithSortFieldNameAscending() {
+    RestAssured
+      .given()
+        .queryParam("sort_field", "name")
+        .queryParam("sort_direction", "Ascending")
+        .queryParam("page_size", 3)
+        .queryParam("page_number", 0)
+      .when().get()
+      .then()
+        .statusCode(200)
+        .body("content.size()", CoreMatchers.is(3))
+        .body("content.get(0).name", CoreMatchers.is("Laranja"))
+        .body("pageSize", CoreMatchers.is(3))
+        .body("pageNumber", CoreMatchers.is(0));
+  }
+
+  @Test
+  @Order(5)
+  public void shouldReturnOk_WhenFruitsListWithSortFieldNameDescending() {
+    RestAssured
+      .given()
+        .queryParam("sort_field", "name")
+        .queryParam("sort_direction", "Descending")
+        .queryParam("page_size", 3)
+        .queryParam("page_number", 0)
+      .when().get()
+      .then()
+        .statusCode(200)
+        .body("content.size()", CoreMatchers.is(3))
+        .body("content.get(0).name", CoreMatchers.is("Pera"))
+        .body("pageSize", CoreMatchers.is(3))
+        .body("pageNumber", CoreMatchers.is(0));
+  }
+
+  @Test
+  @Order(6)
+  public void shouldReturnOk_WhenCountFruits() {
+    RestAssured
+      .given()
+      .when().get("/count")
+      .then()
+        .statusCode(200)
+        .body("count", CoreMatchers.is(3));
+  }
+
+  @Test
+  @Order(7)
   public void shouldReturnOk_WhenGetFruitWithAValidId() {
     RestAssured
       .given()
@@ -43,7 +124,7 @@ public class FruitResourceTest {
   }
 
   @Test
-  @Order(2)
+  @Order(8)
   public void shouldReturnNotFound_WhenGetFruitWithAInvalidId() {
     RestAssured
       .given()
@@ -52,7 +133,7 @@ public class FruitResourceTest {
   }
 
   @Test
-  @Order(4)
+  @Order(9)
   public void shouldReturnBaqRequest_WhenCreateFruitWithoutName() {
     var fruitInputDTO = new FruitInputDTO(null, BigDecimal.valueOf(1));
 
@@ -67,82 +148,82 @@ public class FruitResourceTest {
   }
 
   @Test
-  @Order(5)
+  @Order(10)
   public void shouldReturnBaqRequest_WhenCreateFruitWithABlankName() {
     var fruitInputDTO = new FruitInputDTO("", BigDecimal.valueOf(1));
 
     RestAssured
       .given()
-      .contentType(ContentType.JSON)
-      .body(fruitInputDTO)
+        .contentType(ContentType.JSON)
+        .body(fruitInputDTO)
       .when().post()
       .then()
-      .statusCode(400)
-      .body(CoreMatchers.containsString("Name cannot be blank"));
+        .statusCode(400)
+        .body(CoreMatchers.containsString("Name cannot be blank"));
   }
 
   @Test
-  @Order(6)
+  @Order(11)
   public void shouldReturnBaqRequest_WhenCreateFruitWithoutQuantity() {
     var fruitInputDTO = new FruitInputDTO("Melão", null);
 
     RestAssured
       .given()
-      .contentType(ContentType.JSON)
-      .body(fruitInputDTO)
+        .contentType(ContentType.JSON)
+        .body(fruitInputDTO)
       .when().post()
       .then()
-      .statusCode(400)
-      .body(CoreMatchers.containsString("Quantity cannot be null"));
+        .statusCode(400)
+        .body(CoreMatchers.containsString("Quantity cannot be null"));
   }
 
   @Test
-  @Order(7)
+  @Order(12)
   public void shouldReturnBaqRequest_WhenCreateFruitWithANegativeQuantity() {
     var fruitInputDTO = new FruitInputDTO("Melão", BigDecimal.valueOf(-1));
 
     RestAssured
       .given()
-      .contentType(ContentType.JSON)
-      .body(fruitInputDTO)
+        .contentType(ContentType.JSON)
+        .body(fruitInputDTO)
       .when().post()
       .then()
-      .statusCode(400)
-      .body(CoreMatchers.containsString("Quantity must be greater than zero"));
+        .statusCode(400)
+        .body(CoreMatchers.containsString("Quantity must be greater than zero"));
   }
 
   @Test
-  @Order(7)
+  @Order(13)
   public void shouldReturnBaqRequest_WhenCreateFruitWithAZeroQuantity() {
     var fruitInputDTO = new FruitInputDTO("Melão", BigDecimal.ZERO);
 
     RestAssured
       .given()
-      .contentType(ContentType.JSON)
-      .body(fruitInputDTO)
+        .contentType(ContentType.JSON)
+        .body(fruitInputDTO)
       .when().post()
       .then()
-      .statusCode(400)
-      .body(CoreMatchers.containsString("Quantity must be greater than zero"));
+        .statusCode(400)
+        .body(CoreMatchers.containsString("Quantity must be greater than zero"));
   }
 
   @Test
-  @Order(7)
+  @Order(14)
   public void shouldReturnBaqRequest_WhenCreateFruitWithAFractionQuantity() {
     var fruitInputDTO = new FruitInputDTO("Melão", BigDecimal.valueOf(2.5));
 
     RestAssured
       .given()
-      .contentType(ContentType.JSON)
-      .body(fruitInputDTO)
+        .contentType(ContentType.JSON)
+        .body(fruitInputDTO)
       .when().post()
       .then()
-      .statusCode(400)
-      .body(CoreMatchers.containsString("Quantity must be an integer"));
+        .statusCode(400)
+        .body(CoreMatchers.containsString("Quantity must be an integer"));
   }
 
   @Test
-  @Order(10)
+  @Order(15)
   public void shouldCreated_WhenCreateFruitWithAValidInput() {
     var fruitInputDTO = new FruitInputDTO("Melão", BigDecimal.valueOf(1));
 

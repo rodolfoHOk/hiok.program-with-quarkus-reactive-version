@@ -29,8 +29,6 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.jboss.resteasy.reactive.RestResponse;
 
-import java.util.List;
-
 @Path("/fruits")
 @ApplicationScoped
 @Tag(name = "Fruits")

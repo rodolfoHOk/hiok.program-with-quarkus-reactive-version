@@ -30,6 +30,7 @@ public class FruitService {
   }
 
   public Uni<Long> count() {
+    System.out.println(transactionIdentifier.getTransactionIdentifier());
     return FruitEntity.count();
   }
 
