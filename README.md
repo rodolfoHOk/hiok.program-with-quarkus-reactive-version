@@ -11,6 +11,7 @@
 - Tests (Junit5 / RestAssured / Vertx Testing)
 - Docker
 - OpenAPI (Swagger UI)
+- OpenID Connect (OIDC) bearer authentication
 
 ## Create a Quarkus Project
 
@@ -28,6 +29,7 @@
 - quarkus-kubernetes
 - quarkus-hibernate-validator
 - quarkus-smallrye-openapi
+- quarkus-oidc
 
 ## Quarkus CLI (https://quarkus.io/guides/cli-tooling)
 
@@ -100,3 +102,4 @@
 - [Quarkus deploy to Kubernetes](https://quarkus.io/guides/deploying-to-kubernetes)
 - [Quarkus validation](https://quarkus.io/guides/validation)
 - [minikube](https://minikube.sigs.k8s.io/docs/start/)
+- [Quarkus OIDC bearer authentication](https://quarkus.io/guides/security-oidc-bearer-token-authentication-tutorial)
