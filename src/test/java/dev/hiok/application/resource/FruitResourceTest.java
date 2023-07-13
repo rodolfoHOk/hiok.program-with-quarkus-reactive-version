@@ -3,6 +3,7 @@ package dev.hiok.application.resource;
 import dev.hiok.application.dto.FruitInputDTO;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.security.TestSecurity;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.hamcrest.CoreMatchers;
@@ -112,6 +113,7 @@ public class FruitResourceTest {
 
   @Test
   @Order(7)
+  @TestSecurity(authorizationEnabled = false)
   public void shouldReturnOk_WhenGetFruitWithAValidId() {
     RestAssured
       .given()
@@ -125,15 +127,17 @@ public class FruitResourceTest {
 
   @Test
   @Order(8)
+  @TestSecurity(authorizationEnabled = false)
   public void shouldReturnNotFound_WhenGetFruitWithAInvalidId() {
     RestAssured
       .given()
-      .when().get("/5")
+      .when().get("/10")
       .then().statusCode(404);
   }
 
   @Test
   @Order(9)
+  @TestSecurity(authorizationEnabled = false)
   public void shouldReturnBaqRequest_WhenCreateFruitWithoutName() {
     var fruitInputDTO = new FruitInputDTO(null, BigDecimal.valueOf(1));
 
@@ -149,6 +153,7 @@ public class FruitResourceTest {
 
   @Test
   @Order(10)
+  @TestSecurity(authorizationEnabled = false)
   public void shouldReturnBaqRequest_WhenCreateFruitWithABlankName() {
     var fruitInputDTO = new FruitInputDTO("", BigDecimal.valueOf(1));
 
@@ -164,6 +169,7 @@ public class FruitResourceTest {
 
   @Test
   @Order(11)
+  @TestSecurity(authorizationEnabled = false)
   public void shouldReturnBaqRequest_WhenCreateFruitWithoutQuantity() {
     var fruitInputDTO = new FruitInputDTO("Melão", null);
 
@@ -179,6 +185,7 @@ public class FruitResourceTest {
 
   @Test
   @Order(12)
+  @TestSecurity(authorizationEnabled = false)
   public void shouldReturnBaqRequest_WhenCreateFruitWithANegativeQuantity() {
     var fruitInputDTO = new FruitInputDTO("Melão", BigDecimal.valueOf(-1));
 
@@ -194,6 +201,7 @@ public class FruitResourceTest {
 
   @Test
   @Order(13)
+  @TestSecurity(authorizationEnabled = false)
   public void shouldReturnBaqRequest_WhenCreateFruitWithAZeroQuantity() {
     var fruitInputDTO = new FruitInputDTO("Melão", BigDecimal.ZERO);
 
@@ -209,6 +217,7 @@ public class FruitResourceTest {
 
   @Test
   @Order(14)
+  @TestSecurity(authorizationEnabled = false)
   public void shouldReturnBaqRequest_WhenCreateFruitWithAFractionQuantity() {
     var fruitInputDTO = new FruitInputDTO("Melão", BigDecimal.valueOf(2.5));
 
@@ -224,8 +233,73 @@ public class FruitResourceTest {
 
   @Test
   @Order(15)
+  @TestSecurity(authorizationEnabled = false)
   public void shouldCreated_WhenCreateFruitWithAValidInput() {
     var fruitInputDTO = new FruitInputDTO("Melão", BigDecimal.valueOf(1));
+
+    RestAssured
+      .given()
+        .contentType(ContentType.JSON)
+        .body(fruitInputDTO)
+      .when().post()
+      .then()
+        .statusCode(201)
+        .body("id", CoreMatchers.is(CoreMatchers.notNullValue()))
+        .body("name", CoreMatchers.is(fruitInputDTO.name()))
+        .body("quantity", CoreMatchers.is(fruitInputDTO.quantity().intValue()));
+  }
+
+  @Test
+  @Order(16)
+  public void shouldReturnUnauthorized_WhenGetFruitWithoutAuthentication() {
+    RestAssured
+      .given()
+      .when().get("/1")
+      .then().statusCode(401);
+  }
+
+  @Test
+  @Order(17)
+  @TestSecurity(user = "alice", roles = { "user" })
+  public void shouldReturnOk_WhenGetFruitWithAuthentication() {
+    RestAssured
+      .given()
+      .when().get("/1")
+      .then().statusCode(200);
+  }
+
+  @Test
+  @Order(18)
+  public void shouldReturnUnauthorized_WhenCreateFruitWithoutAuthentication() {
+    var fruitInputDTO = new FruitInputDTO("Melão", BigDecimal.valueOf(1));
+
+    RestAssured
+      .given()
+        .contentType(ContentType.JSON)
+        .body(fruitInputDTO)
+      .when().post()
+      .then().statusCode(401);
+  }
+
+  @Test
+  @Order(19)
+  @TestSecurity(user = "alice", roles = { "user" })
+  public void shouldReturnForbidden_WhenCreateFruitWithoutAdminAuthentication() {
+    var fruitInputDTO = new FruitInputDTO("Melão", BigDecimal.valueOf(1));
+
+    RestAssured
+      .given()
+        .contentType(ContentType.JSON)
+        .body(fruitInputDTO)
+      .when().post()
+      .then().statusCode(403);
+  }
+
+  @Test
+  @Order(20)
+  @TestSecurity(user = "admin", roles = { "admin", "user" })
+  public void shouldReturnCreated_WhenCreateFruitWithAdminAuthentication() {
+    var fruitInputDTO = new FruitInputDTO("Abacate", BigDecimal.valueOf(2));
 
     RestAssured
       .given()

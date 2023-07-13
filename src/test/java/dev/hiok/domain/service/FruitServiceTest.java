@@ -85,7 +85,7 @@ public class FruitServiceTest {
   @RunOnVertxContext
   public void testGetFruitByIdWithInvalidId(UniAsserter asserter) {
     asserter.assertThat(
-      () -> fruitService.findById(5L),
+      () -> fruitService.findById(10L),
       Assertions::assertNull
     );
   }
