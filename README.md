@@ -90,6 +90,15 @@
 
 - Access: http://localhost:8080/q/swagger-ui/
 
+## OIDC Test
+
+- Copy quarkus-realm.json from test/config/ to target/classes/
+- Run command: quarkus dev
+- Access DEV UI: http://localhost:8080/q/dev-v1/
+- Click OpenID Connect / Provider
+- Click Log into Single Page Application
+- username: alice / password: alice
+
 ## Util links
 
 - [Quarkus RestEasy reactive guide](https://quarkus.io/guides/resteasy-reactive)
