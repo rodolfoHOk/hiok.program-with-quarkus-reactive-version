@@ -9,7 +9,8 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @OpenAPIDefinition(
   tags = {
-    @Tag(name = "Fruits", description = "Fruit manager")
+    @Tag(name = "Fruits", description = "Fruit manager"),
+    @Tag(name = "Users", description = "User manager")
   },
   info = @Info(
     title = "Quarkus Reactive Example Application",
