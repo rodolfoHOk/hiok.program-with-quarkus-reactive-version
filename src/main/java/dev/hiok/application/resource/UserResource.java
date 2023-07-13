@@ -25,7 +25,7 @@ import org.jboss.resteasy.reactive.NoCache;
 @ApplicationScoped
 @Tag(name = "Users")
 @SecuritySchemes(value = {
-  @SecurityScheme(securitySchemeName = "bearerToken", type = SecuritySchemeType.HTTP, scheme = "Bearer")
+  @SecurityScheme(securitySchemeName = "BearerToken", type = SecuritySchemeType.HTTP, scheme = "Bearer")
 })
 public class UserResource {
 
@@ -38,9 +38,9 @@ public class UserResource {
   @Produces(MediaType.APPLICATION_JSON)
   @Authenticated
   @Operation(summary = "Get user information")
-  @SecurityRequirement(name = "bearerToken")
+  @SecurityRequirement(name = "BearerToken")
   @APIResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = UserDTO.class)))
-  @APIResponse(responseCode = "401", description = "Unauthorized")
+  @APIResponse(responseCode = "401", description = "UNAUTHORIZED")
   public UserDTO userInfo() {
     return new UserDTO(securityIdentity);
   }

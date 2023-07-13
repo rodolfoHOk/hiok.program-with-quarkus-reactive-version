@@ -9,6 +9,8 @@ import dev.hiok.domain.service.FruitService;
 import io.quarkus.panache.common.Page;
 import io.quarkus.panache.common.Sort;
 import io.smallrye.mutiny.Uni;
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -22,22 +24,30 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.enums.SecuritySchemeType;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
+import org.eclipse.microprofile.openapi.annotations.security.SecuritySchemes;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.jboss.resteasy.reactive.RestResponse;
 
 @Path("/fruits")
 @ApplicationScoped
 @Tag(name = "Fruits")
+@SecuritySchemes(value = {
+  @SecurityScheme(securitySchemeName = "BearerToken", type = SecuritySchemeType.HTTP, scheme = "Bearer")
+})
 public class FruitResource {
 
   @Inject
   FruitService fruitService;
 
   @GET
+  @PermitAll
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Page and sort the fruits list")
   public Uni<Paged<FruitOutputDTO>> pagedListBy(
@@ -59,31 +69,22 @@ public class FruitResource {
 
   @GET
   @Path("/count")
+  @PermitAll
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Total fruits count")
   public Uni<FruitCountDTO> totalCount() {
     return fruitService.count().map(FruitCountDTO::new);
   }
 
-  @POST
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON)
-  @Operation(summary = "Register a new fruit")
-  @APIResponse(responseCode = "201", description = "CREATED",  content = @Content(schema = @Schema(implementation = FruitOutputDTO.class)))
-  @APIResponse(responseCode = "400", description = "BAD REQUEST")
-  public Uni<RestResponse<FruitOutputDTO>> create(@Valid FruitInputDTO fruitInputDTO) {
-    var fruitEntity = FruitMapper.toDomainEntity(fruitInputDTO);
-    return fruitService.create(fruitEntity)
-      .map(savedFruit -> RestResponse.status(RestResponse.Status.CREATED,
-        FruitMapper.toRepresentationModel(savedFruit)));
-  }
-
   @GET
   @Path("/{id}")
+  @RolesAllowed(value = "user")
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Search a fruit by ID")
   @APIResponse(responseCode = "200", description = "OK",  content = @Content(schema = @Schema(implementation = FruitOutputDTO.class)))
+  @APIResponse(responseCode = "401", description = "UNAUTHORIZED")
   @APIResponse(responseCode = "404", description = "NOT FOUND")
+  @SecurityRequirement(name = "BearerToken")
   public Uni<RestResponse<FruitOutputDTO>> findById(
     @PathParam("id")
     @Parameter(description = "Fruit id", example = "1", required = true)
@@ -93,6 +94,23 @@ public class FruitResource {
       .map(foundedFruit ->
         foundedFruit == null ? RestResponse.status(RestResponse.Status.NOT_FOUND)
           : RestResponse.ok(FruitMapper.toRepresentationModel(foundedFruit)));
+  }
+
+  @POST
+  @RolesAllowed(value = "admin")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Register a new fruit")
+  @APIResponse(responseCode = "201", description = "CREATED",  content = @Content(schema = @Schema(implementation = FruitOutputDTO.class)))
+  @APIResponse(responseCode = "401", description = "UNAUTHORIZED")
+  @APIResponse(responseCode = "403", description = "FORBIDDEN")
+  @APIResponse(responseCode = "400", description = "BAD REQUEST")
+  @SecurityRequirement(name = "BearerToken")
+  public Uni<RestResponse<FruitOutputDTO>> create(@Valid FruitInputDTO fruitInputDTO) {
+    var fruitEntity = FruitMapper.toDomainEntity(fruitInputDTO);
+    return fruitService.create(fruitEntity)
+      .map(savedFruit -> RestResponse.status(RestResponse.Status.CREATED,
+        FruitMapper.toRepresentationModel(savedFruit)));
   }
 
 }
