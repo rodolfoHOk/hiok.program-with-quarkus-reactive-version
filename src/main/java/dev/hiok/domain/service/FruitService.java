@@ -47,4 +47,15 @@ public class FruitService {
     return Panache.withTransaction(newFruit::persist);
   }
 
+  public Uni<FruitEntity> update(Long id, FruitEntity fruit) {
+    return Panache.withTransaction(() -> findById(id)
+      .onItem().ifNotNull().transform(entity -> {
+        entity.name = fruit.name;
+        entity.quantity = fruit.quantity;
+        return entity;
+      })
+      .onFailure().recoverWithNull()
+    );
+  }
+
 }

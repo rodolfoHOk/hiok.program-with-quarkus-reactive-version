@@ -18,6 +18,7 @@ import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -86,9 +87,7 @@ public class FruitResource {
   @APIResponse(responseCode = "404", description = "NOT FOUND")
   @SecurityRequirement(name = "BearerToken")
   public Uni<RestResponse<FruitOutputDTO>> findById(
-    @PathParam("id")
-    @Parameter(description = "Fruit id", example = "1", required = true)
-    Long id
+    @PathParam("id") @Parameter(description = "Fruit id", example = "1", required = true) Long id
   ) {
     return fruitService.findById(id)
       .map(foundedFruit ->
@@ -102,15 +101,35 @@ public class FruitResource {
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Register a new fruit")
   @APIResponse(responseCode = "201", description = "CREATED",  content = @Content(schema = @Schema(implementation = FruitOutputDTO.class)))
+  @APIResponse(responseCode = "400", description = "BAD REQUEST")
   @APIResponse(responseCode = "401", description = "UNAUTHORIZED")
   @APIResponse(responseCode = "403", description = "FORBIDDEN")
-  @APIResponse(responseCode = "400", description = "BAD REQUEST")
   @SecurityRequirement(name = "BearerToken")
   public Uni<RestResponse<FruitOutputDTO>> create(@Valid FruitInputDTO fruitInputDTO) {
     var fruitEntity = FruitMapper.toDomainEntity(fruitInputDTO);
     return fruitService.create(fruitEntity)
       .map(savedFruit -> RestResponse.status(RestResponse.Status.CREATED,
         FruitMapper.toRepresentationModel(savedFruit)));
+  }
+
+  @PUT
+  @Path("/{id}")
+  @RolesAllowed(value = "admin")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Update fruit by id")
+  @APIResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = FruitOutputDTO.class)))
+  @APIResponse(responseCode = "400", description = "BAD REQUEST")
+  @APIResponse(responseCode = "401", description = "UNAUTHORIZED")
+  @APIResponse(responseCode = "403", description = "FORBIDDEN")
+  @SecurityRequirement(name = "BearerToken")
+  public Uni<RestResponse<FruitOutputDTO>> update(
+    @PathParam("id") @Parameter(description = "Fruit id", example = "1", required = true) Long id,
+    @Valid FruitInputDTO fruitInputDTO
+  ) {
+    return fruitService.update(id, FruitMapper.toDomainEntity(fruitInputDTO))
+      .map(fruit -> fruit == null ? RestResponse.status(RestResponse.Status.BAD_REQUEST)
+        : RestResponse.ok(FruitMapper.toRepresentationModel(fruit)));
   }
 
 }
