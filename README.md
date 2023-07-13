@@ -30,6 +30,7 @@
 - quarkus-hibernate-validator
 - quarkus-smallrye-openapi
 - quarkus-oidc
+- quarkus-test-security
 
 ## Quarkus CLI (https://quarkus.io/guides/cli-tooling)
 
@@ -112,3 +113,4 @@
 - [Quarkus validation](https://quarkus.io/guides/validation)
 - [minikube](https://minikube.sigs.k8s.io/docs/start/)
 - [Quarkus OIDC bearer authentication](https://quarkus.io/guides/security-oidc-bearer-token-authentication-tutorial)
+- [Quarkus Security testing](https://quarkus.io/guides/security-testing)
