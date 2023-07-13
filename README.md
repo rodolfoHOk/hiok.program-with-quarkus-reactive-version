@@ -38,6 +38,7 @@
 - Run project for development: quarkus dev
 - Add extension: quarkus extension add [extension-name]
 - Run tests: quarkus test
+- Update version: quarkus update
 
 ## Test coverage
 
