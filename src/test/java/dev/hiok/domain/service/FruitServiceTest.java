@@ -108,4 +108,36 @@ public class FruitServiceTest {
     );
   }
 
+  @Test
+  @Order(8)
+  @RunOnVertxContext
+  public void testUpdateFruitWithInvalidId(UniAsserter asserter) {
+    var fruitToUpdate = new FruitEntity();
+    fruitToUpdate.name = "Melancia";
+    fruitToUpdate.quantity = 2;
+
+    asserter.assertThat(
+      () -> fruitService.update(10L, fruitToUpdate),
+      Assertions::assertNull
+    );
+  }
+
+  @Test
+  @Order(9)
+  @RunOnVertxContext
+  public void testUpdateFruit(UniAsserter asserter) {
+    var fruitToUpdate = new FruitEntity();
+    fruitToUpdate.name = "Melancia";
+    fruitToUpdate.quantity = 2;
+
+    asserter.assertThat(
+      () -> fruitService.update(4L, fruitToUpdate),
+      result -> {
+        Assertions.assertEquals(result.id, 4L);
+        Assertions.assertEquals(result.name, fruitToUpdate.name);
+        Assertions.assertEquals(result.quantity, fruitToUpdate.quantity);
+      }
+    );
+  }
+
 }

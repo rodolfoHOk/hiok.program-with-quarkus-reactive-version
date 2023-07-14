@@ -234,7 +234,7 @@ public class FruitResourceTest {
   @Test
   @Order(15)
   @TestSecurity(authorizationEnabled = false)
-  public void shouldCreated_WhenCreateFruitWithAValidInput() {
+  public void shouldReturnCreated_WhenCreateFruitWithAValidInput() {
     var fruitInputDTO = new FruitInputDTO("Melão", BigDecimal.valueOf(1));
 
     RestAssured
@@ -309,6 +309,81 @@ public class FruitResourceTest {
       .then()
         .statusCode(201)
         .body("id", CoreMatchers.is(CoreMatchers.notNullValue()))
+        .body("name", CoreMatchers.is(fruitInputDTO.name()))
+        .body("quantity", CoreMatchers.is(fruitInputDTO.quantity().intValue()));
+  }
+
+  @Test
+  @Order(21)
+  @TestSecurity(authorizationEnabled = false)
+  public void shouldReturnBadRequest_WhenUpdateFruitWithAInvalidId() {
+    var fruitInputDTO = new FruitInputDTO("Mamão", BigDecimal.valueOf(1));
+
+    RestAssured
+      .given()
+        .contentType(ContentType.JSON)
+        .body(fruitInputDTO)
+      .when().put("/10")
+      .then().statusCode(400);
+  }
+
+  @Test
+  @Order(22)
+  @TestSecurity(authorizationEnabled = false)
+  public void shouldReturnBaqRequest_WhenUpdateFruitWithABlankName() {
+    var fruitInputDTO = new FruitInputDTO("", BigDecimal.valueOf(1));
+
+    RestAssured
+      .given()
+        .contentType(ContentType.JSON)
+        .body(fruitInputDTO)
+      .when().put("/5")
+      .then()
+        .statusCode(400)
+        .body(CoreMatchers.containsString("Name cannot be blank"));
+  }
+
+  @Test
+  @Order(23)
+  public void shouldReturnUnauthorized_WhenUpdateFruitWithoutAuthentication() {
+    var fruitInputDTO = new FruitInputDTO("Mamão", BigDecimal.valueOf(1));
+
+    RestAssured
+      .given()
+        .contentType(ContentType.JSON)
+        .body(fruitInputDTO)
+      .when().put("/5")
+      .then().statusCode(401);
+  }
+
+  @Test
+  @Order(24)
+  @TestSecurity(user = "alice", roles = { "user" })
+  public void shouldReturnForbidden_WhenUpdateFruitWithoutAdminAuthentication() {
+    var fruitInputDTO = new FruitInputDTO("Mamão", BigDecimal.valueOf(1));
+
+    RestAssured
+      .given()
+        .contentType(ContentType.JSON)
+        .body(fruitInputDTO)
+      .when().put("/5")
+      .then().statusCode(403);
+  }
+
+  @Test
+  @Order(25)
+  @TestSecurity(user = "admin", roles = { "admin", "user" })
+  public void shouldReturnOk_WhenUpdateFruitWithAdminAuthentication() {
+    var fruitInputDTO = new FruitInputDTO("Mamão", BigDecimal.valueOf(1));
+
+    RestAssured
+      .given()
+        .contentType(ContentType.JSON)
+        .body(fruitInputDTO)
+      .when().put("/5")
+      .then()
+        .statusCode(200)
+        .body("id", CoreMatchers.is(5))
         .body("name", CoreMatchers.is(fruitInputDTO.name()))
         .body("quantity", CoreMatchers.is(fruitInputDTO.quantity().intValue()));
   }
