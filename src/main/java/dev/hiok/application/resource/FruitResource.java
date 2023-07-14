@@ -27,7 +27,6 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.SecuritySchemeType;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
@@ -39,6 +38,7 @@ import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
 import org.eclipse.microprofile.openapi.annotations.security.SecuritySchemes;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.jboss.resteasy.reactive.RestResponse;
+import org.jboss.resteasy.reactive.RestResponse.Status;
 
 @Path("/fruits")
 @ApplicationScoped
@@ -95,7 +95,7 @@ public class FruitResource {
   ) {
     return fruitService.findById(id)
       .map(foundedFruit ->
-        foundedFruit == null ? RestResponse.status(RestResponse.Status.NOT_FOUND)
+        foundedFruit == null ? RestResponse.status(Status.NOT_FOUND)
           : RestResponse.ok(FruitMapper.toRepresentationModel(foundedFruit)));
   }
 
@@ -112,7 +112,7 @@ public class FruitResource {
   public Uni<RestResponse<FruitOutputDTO>> create(@Valid FruitInputDTO fruitInputDTO) {
     var fruitEntity = FruitMapper.toDomainEntity(fruitInputDTO);
     return fruitService.create(fruitEntity)
-      .map(savedFruit -> RestResponse.status(RestResponse.Status.CREATED,
+      .map(savedFruit -> RestResponse.status(Status.CREATED,
         FruitMapper.toRepresentationModel(savedFruit)));
   }
 
@@ -132,7 +132,7 @@ public class FruitResource {
     @Valid FruitInputDTO fruitInputDTO
   ) {
     return fruitService.update(id, FruitMapper.toDomainEntity(fruitInputDTO))
-      .map(fruit -> fruit == null ? RestResponse.status(RestResponse.Status.BAD_REQUEST)
+      .map(fruit -> fruit == null ? RestResponse.status(Status.BAD_REQUEST)
         : RestResponse.ok(FruitMapper.toRepresentationModel(fruit)));
   }
 
@@ -151,7 +151,7 @@ public class FruitResource {
     @Valid FruitQuantityDTO fruitQuantityDTO
   ) {
     return fruitService.updateQuantity(name, fruitQuantityDTO.quantity().intValue())
-      .map(fruit -> fruit == null ? RestResponse.status(RestResponse.Status.BAD_REQUEST)
+      .map(fruit -> fruit == null ? RestResponse.status(Status.BAD_REQUEST)
         : RestResponse.ok(FruitMapper.toRepresentationModel(fruit)));
   }
 
@@ -168,8 +168,8 @@ public class FruitResource {
     @PathParam("id") @Parameter(description = "Fruit id", example = "1", required = true) Long id
   ) {
     return fruitService.delete(id)
-      .map(deleted -> deleted ? RestResponse.status(Response.Status.NO_CONTENT)
-        : RestResponse.status(Response.Status.BAD_REQUEST));
+      .map(deleted -> deleted ? RestResponse.status(Status.NO_CONTENT)
+        : RestResponse.status(Status.BAD_REQUEST));
   }
 
 }

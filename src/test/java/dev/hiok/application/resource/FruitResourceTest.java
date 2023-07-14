@@ -413,7 +413,7 @@ public class FruitResourceTest {
       .given()
         .contentType(ContentType.JSON)
         .body(fruitQuantityDTO)
-      .when().patch("/Maça")
+      .when().patch("/Mamão")
       .then()
         .statusCode(400)
         .body(CoreMatchers.containsString("Quantity must be greater than or igual zero"));
@@ -428,7 +428,7 @@ public class FruitResourceTest {
       .given()
         .contentType(ContentType.JSON)
         .body(fruitQuantityDTO)
-      .when().patch("/Maça")
+      .when().patch("/Mamão")
       .then().statusCode(401);
   }
 
@@ -442,11 +442,50 @@ public class FruitResourceTest {
       .given()
         .contentType(ContentType.JSON)
         .body(fruitQuantityDTO)
-      .when().patch("/Maçã")
+      .when().patch("/Mamão")
       .then()
         .statusCode(200)
-        .body("name", CoreMatchers.is("Maçã"))
+        .body("name", CoreMatchers.is("Mamão"))
         .body("quantity", CoreMatchers.is(0));
+  }
+
+  @Test
+  @Order(30)
+  @TestSecurity(authorizationEnabled = false)
+  public void shouldReturnBadRequest_WhenDeleteFruitWithAInvalidId() {
+    RestAssured
+      .given()
+      .when().delete("/10")
+      .then().statusCode(400);
+  }
+
+  @Test
+  @Order(31)
+  public void shouldReturnUnauthorized_WhenDeleteFruitWithoutAuthentication() {
+    RestAssured
+      .given()
+      .when().delete("/5")
+      .then().statusCode(401);
+  }
+
+  @Test
+  @Order(32)
+  @TestSecurity(user = "alice", roles = { "user" })
+  public void shouldReturnForbidden_WhenDeleteFruitWithoutAdminAuthentication() {
+    RestAssured
+      .given()
+      .when().delete("/5")
+      .then().statusCode(403);
+  }
+
+  @Test
+  @Order(33)
+  @TestSecurity(user = "admin", roles = { "admin", "user" })
+  public void shouldReturnNoContent_WhenDeleteFruitWithAdminAuthentication() {
+    RestAssured
+      .given()
+      .when().delete("/5")
+      .then().statusCode(204);
   }
 
 }

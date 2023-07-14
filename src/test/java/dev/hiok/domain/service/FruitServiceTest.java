@@ -163,4 +163,24 @@ public class FruitServiceTest {
     );
   }
 
+  @Test
+  @Order(12)
+  @RunOnVertxContext
+  public void testDeleteFruitWithInvalidId(UniAsserter asserter) {
+    asserter.assertThat(
+      () -> fruitService.delete(10L),
+      Assertions::assertFalse
+    );
+  }
+
+  @Test
+  @Order(13)
+  @RunOnVertxContext
+  public void testDeleteFruit(UniAsserter asserter) {
+    asserter.assertThat(
+      () -> fruitService.delete(4L),
+      Assertions::assertTrue
+    );
+  }
+
 }
