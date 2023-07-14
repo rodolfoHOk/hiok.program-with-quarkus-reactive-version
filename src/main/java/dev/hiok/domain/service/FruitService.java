@@ -74,6 +74,7 @@ public class FruitService {
   }
 
   public Uni<Boolean> delete(Long id) {
+    System.out.println(transactionIdentifier.getTransactionIdentifier());
     return  Panache.withTransaction(() -> FruitEntity.deleteById(id));
   }
 
