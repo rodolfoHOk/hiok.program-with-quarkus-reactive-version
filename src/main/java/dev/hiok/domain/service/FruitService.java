@@ -73,4 +73,8 @@ public class FruitService {
     );
   }
 
+  public Uni<Boolean> delete(Long id) {
+    return  Panache.withTransaction(() -> FruitEntity.deleteById(id));
+  }
+
 }

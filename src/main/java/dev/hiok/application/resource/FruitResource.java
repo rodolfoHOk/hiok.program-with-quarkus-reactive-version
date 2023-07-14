@@ -16,6 +16,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PATCH;
@@ -26,6 +27,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.SecuritySchemeType;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
@@ -151,6 +153,23 @@ public class FruitResource {
     return fruitService.updateQuantity(name, fruitQuantityDTO.quantity().intValue())
       .map(fruit -> fruit == null ? RestResponse.status(RestResponse.Status.BAD_REQUEST)
         : RestResponse.ok(FruitMapper.toRepresentationModel(fruit)));
+  }
+
+  @DELETE
+  @Path("/{id}")
+  @RolesAllowed(value = "admin")
+  @Operation(summary = "Delete fruit by ID")
+  @APIResponse(responseCode = "204", description = "NO CONTENT")
+  @APIResponse(responseCode = "400", description = "BAD REQUEST")
+  @APIResponse(responseCode = "401", description = "UNAUTHORIZED")
+  @APIResponse(responseCode = "403", description = "FORBIDDEN")
+  @SecurityRequirement(name = "BearerToken")
+  public Uni<RestResponse<Void>> delete(
+    @PathParam("id") @Parameter(description = "Fruit id", example = "1", required = true) Long id
+  ) {
+    return fruitService.delete(id)
+      .map(deleted -> deleted ? RestResponse.status(Response.Status.NO_CONTENT)
+        : RestResponse.status(Response.Status.BAD_REQUEST));
   }
 
 }
