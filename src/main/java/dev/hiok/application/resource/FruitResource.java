@@ -3,6 +3,7 @@ package dev.hiok.application.resource;
 import dev.hiok.application.dto.FruitCountDTO;
 import dev.hiok.application.dto.FruitInputDTO;
 import dev.hiok.application.dto.FruitOutputDTO;
+import dev.hiok.application.dto.FruitQuantityDTO;
 import dev.hiok.application.dto.Paged;
 import dev.hiok.application.mapper.FruitMapper;
 import dev.hiok.domain.service.FruitService;
@@ -17,6 +18,7 @@ import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
@@ -128,6 +130,25 @@ public class FruitResource {
     @Valid FruitInputDTO fruitInputDTO
   ) {
     return fruitService.update(id, FruitMapper.toDomainEntity(fruitInputDTO))
+      .map(fruit -> fruit == null ? RestResponse.status(RestResponse.Status.BAD_REQUEST)
+        : RestResponse.ok(FruitMapper.toRepresentationModel(fruit)));
+  }
+
+  @PATCH
+  @Path("/{name}")
+  @RolesAllowed(value = "user")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Update fruit quantity by name")
+  @APIResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = FruitOutputDTO.class)))
+  @APIResponse(responseCode = "400", description = "BAD REQUEST")
+  @APIResponse(responseCode = "401", description = "UNAUTHORIZED")
+  @SecurityRequirement(name = "BearerToken")
+  public Uni<RestResponse<FruitOutputDTO>> updateQuantity(
+    @PathParam("name") @Parameter(description = "Fruit name", example = "Maça", required = true) String name,
+    @Valid FruitQuantityDTO fruitQuantityDTO
+  ) {
+    return fruitService.updateQuantity(name, fruitQuantityDTO.quantity().intValue())
       .map(fruit -> fruit == null ? RestResponse.status(RestResponse.Status.BAD_REQUEST)
         : RestResponse.ok(FruitMapper.toRepresentationModel(fruit)));
   }

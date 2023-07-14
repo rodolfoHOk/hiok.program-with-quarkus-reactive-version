@@ -58,4 +58,19 @@ public class FruitService {
     );
   }
 
+  public Uni<FruitEntity> findByName(String name) {
+    System.out.println(transactionIdentifier.getTransactionIdentifier());
+    return FruitEntity.find("name", name).firstResult();
+  }
+
+  public Uni<FruitEntity> updateQuantity(String name, int quantity) {
+    return Panache.withTransaction(() -> findByName(name)
+      .onItem().ifNotNull().transform(entity -> {
+        entity.quantity = quantity;
+        return entity;
+      })
+      .onFailure().recoverWithNull()
+    );
+  }
+
 }
