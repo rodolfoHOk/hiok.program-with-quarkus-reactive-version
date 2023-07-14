@@ -119,7 +119,7 @@ public class FruitResource {
   @RolesAllowed(value = "admin")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  @Operation(summary = "Update fruit by id")
+  @Operation(summary = "Update fruit by ID")
   @APIResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = FruitOutputDTO.class)))
   @APIResponse(responseCode = "400", description = "BAD REQUEST")
   @APIResponse(responseCode = "401", description = "UNAUTHORIZED")

@@ -1,6 +1,7 @@
 package dev.hiok.application.resource;
 
 import dev.hiok.application.dto.FruitInputDTO;
+import dev.hiok.application.dto.FruitQuantityDTO;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
@@ -386,6 +387,66 @@ public class FruitResourceTest {
         .body("id", CoreMatchers.is(5))
         .body("name", CoreMatchers.is(fruitInputDTO.name()))
         .body("quantity", CoreMatchers.is(fruitInputDTO.quantity().intValue()));
+  }
+
+  @Test
+  @Order(26)
+  @TestSecurity(authorizationEnabled = false)
+  public void shouldReturnBaqRequest_WhenUpdateFruitQuantityWithInvalidName() {
+    var fruitQuantityDTO = new FruitQuantityDTO(BigDecimal.valueOf(1));
+
+    RestAssured
+      .given()
+        .contentType(ContentType.JSON)
+        .body(fruitQuantityDTO)
+      .when().patch("/Banana")
+      .then().statusCode(400);
+  }
+
+  @Test
+  @Order(27)
+  @TestSecurity(authorizationEnabled = false)
+  public void shouldReturnBaqRequest_WhenUpdateFruitQuantityWithInvalidQuantity() {
+    var fruitQuantityDTO = new FruitQuantityDTO(BigDecimal.valueOf(-1));
+
+    RestAssured
+      .given()
+        .contentType(ContentType.JSON)
+        .body(fruitQuantityDTO)
+      .when().patch("/Maça")
+      .then()
+        .statusCode(400)
+        .body(CoreMatchers.containsString("Quantity must be greater than or igual zero"));
+  }
+
+  @Test
+  @Order(28)
+  public void shouldReturnUnauthorized_WhenUpdateFruitQuantityWithoutAuthentication() {
+    var fruitQuantityDTO = new FruitQuantityDTO(BigDecimal.valueOf(1));
+
+    RestAssured
+      .given()
+        .contentType(ContentType.JSON)
+        .body(fruitQuantityDTO)
+      .when().patch("/Maça")
+      .then().statusCode(401);
+  }
+
+  @Test
+  @Order(29)
+  @TestSecurity(user = "alice", roles = { "user" })
+  public void shouldReturnOk_WhenUpdateFruitQuantityWithAuthentication() {
+    var fruitQuantityDTO = new FruitQuantityDTO(BigDecimal.ZERO);
+
+    RestAssured
+      .given()
+        .contentType(ContentType.JSON)
+        .body(fruitQuantityDTO)
+      .when().patch("/Maçã")
+      .then()
+        .statusCode(200)
+        .body("name", CoreMatchers.is("Maçã"))
+        .body("quantity", CoreMatchers.is(0));
   }
 
 }

@@ -140,4 +140,27 @@ public class FruitServiceTest {
     );
   }
 
+  @Test
+  @Order(10)
+  @RunOnVertxContext
+  public void testUpdateFruitQuantityWithInvalidName(UniAsserter asserter) {
+    asserter.assertThat(
+      () -> fruitService.updateQuantity("Banana", 0),
+      Assertions::assertNull
+    );
+  }
+
+  @Test
+  @Order(11)
+  @RunOnVertxContext
+  public void testUpdateFruitQuantity(UniAsserter asserter) {
+    asserter.assertThat(
+      () -> fruitService.updateQuantity("Pera", 0),
+      result -> {
+        Assertions.assertEquals(result.name, "Pera");
+        Assertions.assertEquals(result.quantity, 0);
+      }
+    );
+  }
+
 }
